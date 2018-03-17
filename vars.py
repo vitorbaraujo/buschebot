@@ -1,0 +1,2 @@
+API_TOKEN = 'bot_api_token'
+PARIS_STICKER = 'CAADAQADrQADZ6LPCqQOfJqDfhiwAg'
