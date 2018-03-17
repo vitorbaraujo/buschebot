@@ -1,5 +1,8 @@
 require 'telegram_bot'
 
+PARIS_STICKER = 'CAADAQADrQADZ6LPCqQOfJqDfhiwAg'
+BUSCHE_USERNAME = 'jpbusche'
+
 bot = TelegramBot.new(token: 'bot_api_token')
 
 bot.get_updates(fail_silently: true) do |message|
