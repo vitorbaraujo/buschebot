@@ -1,65 +1,74 @@
+import re
 import random
 import string
 from telegram.ext import Updater, MessageHandler, Filters
 
 import vars
+import sentences as s
 
 PUNCTUATION_MARKS = '.?!:;-()[]{}/'
+PQ_RGX = 'po*r* *q'
+BOT_RGX = '(^| |[^a-z])(busche|bot)($| |[^a-z])'
+BOT_NAME = '@busche_bot'
+BUSCHE_USERNAME = 'jpbusche'
+RGX_OPTIONS = re.M | re.I
 
 updater = Updater(token=vars.API_TOKEN)
 dispatcher = updater.dispatcher
 
-phrases = [
-    "pego meu carro e vou embora",
-    "tchau",
-    "oloco",
-    "veneza parece uma favela",
-    "cansei de ir pra europa",
-    "o carro e meu",
-]
-
-reply = [
-    "fala carai",
-    "fala",
-]
-
-responses = [
-    "sei la",
-    "parei de trabalhar como vidente",
-]
-
-questions = [
-    "como", "qual", "o que",
-    "porque", "porquê", "por que", "pq",
-]
+message_counter = {}
 
 def echo(bot, update):
     chat_id = update.message.chat_id
-    sender_name = update.message.from_user.first_name + ' ' + update.message.from_user.last_name
-    sender = update.message.from_user.username
+    user = update.message.from_user
+    first_name = user.first_name.lower()
+    name = 'temp_name'
+    if user.first_name:
+        name = user.first_name
+    if user.last_name:
+        name += ' ' + user.last_name
+    username = user.username
     message = update.message.text
     answer = ""
 
-    if "@busche_bot" in message:
-        answer = random.choice(reply)
-    else:
-        if sender == 'jpbusche' and len(message.split()) > 1 and '?' not in message and message[-1] not in PUNCTUATION_MARKS:
-            answer = message + '?'
-        elif 'bot' in message.lower().split() or 'bot?' in message.lower().split():
-            answer = random.choice(reply)
-        elif '?' in message and len(message) > 1:
-            if any(x in message.lower() for x in questions):
-                answer = random.choice(responses)
-            elif 'quem' in message:
-                answer = random.choice(responses)
-            else:
-                answer = random.choice(["sim","nao","nao po"])
+    is_question = re.search(PQ_RGX, message, RGX_OPTIONS) \
+        or any(q in message.lower() for q in s.questions)
+    length = len(message.split())
 
-    print('Message "{}" sent by [{},{}] -> {}'.format(message, sender, sender_name, answer))
+    if name in message_counter and message_counter[name] >= 5:
+        answer = random.choice(s.stop)
+        if answer[-1] == ' ' and first_name:
+            answer += first_name
+        message_counter[name] = 0
+    else:
+        if username == BUSCHE_USERNAME and length > 1 and '?' not in message:
+            answer = message + '?'
+        elif '?' in message and len(set(list(message.replace(' ','')))) != 1:
+            if is_question:
+                answer = random.choice(s.responses)
+            elif 'o que' in message.lower():
+                answer = 'sei la po'
+            else:
+                answer = random.choice(s.yes_no)
+        elif BOT_NAME in message:
+            answer = random.choice(s.reply)
+        elif re.search(BOT_RGX, message, RGX_OPTIONS):
+            answer = random.choice(s.reply)
+
+    if len(answer) > 0:
+        if name in message_counter:
+            message_counter[name] += 1
+        else:
+            message_counter[name] = 0
+
+    print('{}({}) -> {} times'.format(name, username, message_counter[name]))
+    print('  message: "{}"'.format(message))
+    print('  reply: "{}"'.format(answer))
+    print('-' * 50)
+
     bot.send_message(chat_id=chat_id, text=answer)
 
 echo_handler = MessageHandler(Filters.text, echo)
-
 dispatcher.add_handler(echo_handler)
 
 updater.start_polling()
