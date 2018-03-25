@@ -10,7 +10,7 @@ PUNCTUATION_MARKS = '.?!:;-()[]{}/'
 PQ_RGX = 'po*r* *q'
 BOT_RGX = '(^| |[^a-z])(busche|bot)($| |[^a-z])'
 BOT_NAME = '@busche_bot'
-BUSCHE_USERNAME = 'jpbusche'
+BUSCHE_ID = 152231281
 RGX_OPTIONS = re.M | re.I
 
 updater = Updater(token=vars.API_TOKEN)
@@ -41,7 +41,7 @@ def echo(bot, update):
             answer += first_name
         message_counter[name] = 0
     else:
-        if username == BUSCHE_USERNAME and length > 1 and '?' not in message:
+        if user.id == BUSCHE_ID and length > 1 and '?' not in message:
             answer = message + '?'
         elif '?' in message and len(set(list(message.replace(' ','')))) != 1:
             if is_question:
