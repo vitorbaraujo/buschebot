@@ -32,8 +32,10 @@ yes_no = [
 ]
 
 stop = [
-    "ta bom ne",
+    "vai caçar o que fazer po",
+    "tu nao tem o que fazer nao?",
+    "ta bom ne ",
     "pode parar de falar comigo ja ",
     "cansei de falar com voce ",
-    "cansei de voce",
+    "cansei de voce ",
 ]
