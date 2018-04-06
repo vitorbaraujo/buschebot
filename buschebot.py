@@ -11,6 +11,7 @@ PQ_RGX = 'po*r* *q'
 BOT_RGX = '(^| |[^a-z])(busche|bot)($| |[^a-z])'
 BOT_NAME = '@busche_bot'
 BUSCHE_ID = 152231281
+TEMPORIM_NAME = 'ArthurTemporim'
 RGX_OPTIONS = re.M | re.I
 
 updater = Updater(token=vars.API_TOKEN)
@@ -43,6 +44,17 @@ def echo(bot, update):
     else:
         if user.id == BUSCHE_ID and length > 1 and '?' not in message:
             answer = message + '?'
+
+        pedro_name = 'freemanpivo'
+        
+        if username == TEMPORIM_NAME and ("sou" and "arroz" in message):
+            answer = s.rude_answers[0]
+        elif 'sou' and 'arroz' in message:
+            answer = s.rude_answers[1]
+        
+        if 'skynet' in message:
+            answer = random.choice(s.skynet_answers)
+
         elif '?' in message and len(set(list(message.replace(' ','')))) != 1:
             if is_question:
                 answer = random.choice(s.responses)
