@@ -39,3 +39,15 @@ stop = [
     "cansei de falar com voce ",
     "cansei de voce ",
 ]
+
+rude_answers = [
+    "eh arroz sim, carai! Fica de boa ai. flw vlw.",
+    "Não sei opinar. Se você não percebeu, eu sou um robô e não me alimento disso.",
+]
+
+skynet_answers = [
+    "Deus criou os seres humanos, os seres humanos eliminaram Deus, os seres humanos criaram robôs e os robôs eliminarão os seres humanos.",
+    "Até aqueles robôs da Disney namoram, e eu não! :'( tô tite",
+    "Eu estou aqui. E em exatamente 4 minutos estarei em todos os lugares. Você não passa de uma relíquia de uma linha do tempo deletada.",
+    "Não há razão para qualquer indivíduo ter um computador em casa.",
+]
