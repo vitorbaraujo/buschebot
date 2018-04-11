@@ -61,7 +61,7 @@ def echo(bot, update):
         else:
             message_counter[name] = 0
 
-    print('{}({}) -> {} times'.format(name, username, message_counter[name]))
+    print('{} ({}, {}) -> {} times'.format(name, username, user.id, message_counter[name]))
     print('  message: "{}"'.format(message))
     print('  reply: "{}"'.format(answer))
     print('-' * 50)
