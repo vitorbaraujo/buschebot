@@ -35,11 +35,11 @@ def echo(bot, update):
         or any(q in message.lower() for q in s.questions)
     length = len(message.split())
 
-    if name in message_counter and message_counter[name] >= 5:
+    if user.id in message_counter and message_counter[user.id] >= 5:
         answer = random.choice(s.stop)
         if answer[-1] == ' ' and first_name:
             answer += first_name
-        message_counter[name] = 0
+        message_counter[user.id] = 0
     else:
         if user.id == BUSCHE_ID and length > 1 and '?' not in message:
             answer = message + '?'
@@ -56,12 +56,12 @@ def echo(bot, update):
             answer = random.choice(s.reply)
 
     if len(answer) > 0:
-        if name in message_counter:
-            message_counter[name] += 1
+        if user.id in message_counter:
+            message_counter[user.id] += 1
         else:
-            message_counter[name] = 0
+            message_counter[user.id] = 0
 
-    print('{} ({}, {}) -> {} times'.format(name, username, user.id, message_counter[name]))
+    print('{} ({}, {}) -> {} times'.format(name, username, user.id, message_counter[user.id]))
     print('  message: "{}"'.format(message))
     print('  reply: "{}"'.format(answer))
     print('-' * 50)
