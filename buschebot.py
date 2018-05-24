@@ -66,7 +66,7 @@ def echo(bot, update):
     print('  reply: "{}"'.format(answer))
     print('-' * 50)
 
-    bot.send_message(chat_id=chat_id, text=answer)
+    bot.send_message(chat_id=chat_id, text=answer, reply_to_message_id=update.message.message_id)
 
 echo_handler = MessageHandler(Filters.text, echo)
 dispatcher.add_handler(echo_handler)
