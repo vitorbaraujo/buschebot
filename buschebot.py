@@ -61,12 +61,17 @@ def echo(bot, update):
         else:
             message_counter[user.id] = 0
 
+    should_reply = random.choice([0,1])
+
     print('{} ({}, {}) -> {} times'.format(name, username, user.id, message_counter[user.id]))
     print('  message: "{}"'.format(message))
     print('  reply: "{}"'.format(answer))
     print('-' * 50)
 
-    bot.send_message(chat_id=chat_id, text=answer, reply_to_message_id=update.message.message_id)
+    if should_reply:
+        bot.send_message(chat_id=chat_id, text=answer, reply_to_message_id=update.message.message_id)
+    else:
+        bot.send_message(chat_id=chat_id, text=answer)
 
 echo_handler = MessageHandler(Filters.text, echo)
 dispatcher.add_handler(echo_handler)
