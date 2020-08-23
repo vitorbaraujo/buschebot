@@ -1,11 +1,13 @@
 package main
 
 import (
-	"github.com/vitorbaraujo/buschebot/responder"
+	"fmt"
 	"log"
 	"os"
 
 	"github.com/go-telegram-bot-api/telegram-bot-api"
+	_ "github.com/vitorbaraujo/buschebot/repliers" // used for register custom repliers
+	"github.com/vitorbaraujo/buschebot/reply"
 )
 
 func main() {
@@ -42,14 +44,17 @@ func queryMessages(bot *tgbotapi.BotAPI) error {
 			continue
 		}
 
-		response := responder.ReplyMessage(update.Message.Text)
-		msg := tgbotapi.NewMessage(update.Message.Chat.ID, response.Text)
+		response := reply.GetReply(&reply.MessagePayload{
+			Text:   update.Message.Text,
+			UserId: fmt.Sprint(update.Message.From.ID),
+		})
 
 		if response.Text == "" {
 			// bot did not come up with an answer.
 			continue
 		}
 
+		msg := tgbotapi.NewMessage(update.Message.Chat.ID, response.Text)
 		if response.Reply {
 			msg.ReplyToMessageID = update.Message.MessageID
 		}
