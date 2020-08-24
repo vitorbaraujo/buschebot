@@ -44,10 +44,13 @@ func queryMessages(bot *tgbotapi.BotAPI) error {
 			continue
 		}
 
-		response := reply.GetReply(&reply.MessagePayload{
+		response, err := reply.GetReply(&reply.MessagePayload{
 			Text:   update.Message.Text,
 			UserId: fmt.Sprint(update.Message.From.ID),
 		})
+		if err != nil {
+			return err
+		}
 
 		if response.Text == "" {
 			// bot did not come up with an answer.

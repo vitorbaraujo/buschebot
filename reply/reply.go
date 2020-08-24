@@ -3,6 +3,8 @@ package reply
 import (
 	"math/rand"
 	"strings"
+
+	"github.com/vitorbaraujo/buschebot/storage"
 )
 
 type Replier interface {
@@ -32,22 +34,29 @@ var RandInt = rand.Int
 
 // GetReply parses a message and responds accordingly.
 // It can differ between a regular question and an indagation (see isIndagation method).
-func GetReply(payload *MessagePayload) *Response {
+func GetReply(payload *MessagePayload) (*Response, error) {
 	text := strings.ToLower(strings.TrimSpace(payload.Text))
 	answer := getReplier(payload).Reply(text)
+	var err error
 
 	if answer == "" && IsQuestion(text) {
 		if IsIndagation(text) {
-			answer = "sei la"
+			answer, err = storage.GetRandomResponse()
+			if err != nil {
+				return nil, err
+			}
 		} else {
-			answer = "sim"
+			answer, err = storage.GetRandomShortAnswer()
+			if err != nil {
+				return nil, err
+			}
 		}
 	}
 
 	return &Response{
 		Text:  answer,
 		Reply: RandInt()%2 == 0,
-	}
+	}, nil
 }
 
 var repliers []Replier

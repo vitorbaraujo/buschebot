@@ -1,6 +1,11 @@
 package reply
 
-import "strings"
+import (
+	"fmt"
+	"strings"
+
+	"github.com/vitorbaraujo/buschebot/storage"
+)
 
 func IsQuestion(msg string) bool {
 	return strings.HasSuffix(msg, "?")
@@ -11,17 +16,13 @@ func IsIndagation(msg string) bool {
 		return false
 	}
 
-	prefixes := []string{
-		"qual",
-		"o que",
-		"quando",
-		"quem",
-		"pq",
-		"porque",
-		"por que",
+	data, err := storage.GetData()
+	if err != nil {
+		fmt.Errorf("getting data from storage")
+		return false
 	}
 
-	for _, prefix := range prefixes {
+	for _, prefix := range data.IndagationPrefixes {
 		if strings.HasPrefix(msg, prefix) {
 			return true
 		}

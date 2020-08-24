@@ -1,0 +1,26 @@
+{
+  "mention_replies": [
+    "que que tao falando de mim",
+    "fala carai",
+    "fala"
+  ],
+  "responses": [
+    "sei la",
+    "parei de trabalhar como vidente"
+  ],
+  "indagation_prefixes": [
+    "como",
+    "qual",
+    "o que",
+    "quando",
+    "quem",
+    "pq",
+    "porque",
+    "por que"
+  ],
+  "short_answers": [
+    "sim",
+    "nao",
+    "nao po"
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "responses": [
+    "I don't know"
+  ],
+  "indagation_prefixes": [
+    "what",
+    "why"
+  ],
+  "short_answers": [
+    "yes"
+  ]
+}

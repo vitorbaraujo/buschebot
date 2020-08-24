@@ -1,13 +1,26 @@
 package reply_test
 
 import (
+	"io/ioutil"
+	"path"
 	"testing"
 
 	"github.com/kylelemons/godebug/pretty"
 	"github.com/vitorbaraujo/buschebot/reply"
+	"github.com/vitorbaraujo/buschebot/storage"
 )
 
 func TestMain(m *testing.M) {
+	rootPath, err := relativePathToProjectRoot()
+	if err != nil {
+		panic(err)
+	}
+
+	// Replace storage with test database.
+	oldDataFile := storage.DataFile
+	storage.DataFile = path.Join(rootPath, "storage/data_test.json")
+	defer func() { storage.DataFile = oldDataFile }()
+
 	randIntFn := reply.RandInt
 	defer func() { reply.RandInt = randIntFn }()
 	reply.RandInt = func() int { return 1 } // aka should never reply
@@ -36,12 +49,15 @@ func TestReplyMessage_noReply(t *testing.T) {
 	for _, test := range tests {
 		test := test
 		t.Run(test.name, func (t *testing.T) {
-			got := reply.GetReply(&reply.MessagePayload{
+			got, err := reply.GetReply(&reply.MessagePayload{
 				Text:   test.text,
 			})
+			if err != nil {
+				t.Fatalf("GetReply returned err = %v", err)
+			}
 
 			if diff := pretty.Compare(got, test.want); diff != "" {
-			    t.Errorf("post-GetReply diff: (-got +want)\n%v", diff)
+			    t.Fatalf("post-GetReply diff: (-got +want)\n%v", diff)
 			}
 		})
 	}
@@ -54,17 +70,17 @@ func TestReplyMessage_regularQuestion(t *testing.T) {
 		want *reply.Response
 	} {
 		{
-			name: "question",
-			text: "eita, verdade?",
+			name: "regularQuestion",
+			text: "oh, really?",
 			want: &reply.Response{
-				Text: "sim",
+				Text: "yes",
 			},
 		},
 		{
-			name: "untrimmedQuestion",
-			text: "    eita, verdade?    ",
+			name: "trailingSpaces",
+			text: "    oh, really?    ",
 			want: &reply.Response{
-				Text: "sim",
+				Text: "yes",
 			},
 		},
 	}
@@ -72,12 +88,15 @@ func TestReplyMessage_regularQuestion(t *testing.T) {
 	for _, test := range tests {
 		test := test
 		t.Run(test.name, func (t *testing.T) {
-			got := reply.GetReply(&reply.MessagePayload{
+			got, err := reply.GetReply(&reply.MessagePayload{
 				Text: test.text,
 			})
+			if err != nil {
+				t.Fatalf("GetReply returned err = %v", err)
+			}
 
 			if diff := pretty.Compare(got, test.want); diff != "" {
-				t.Errorf("post-GetReply diff: (-got +want)\n%v", diff)
+				t.Fatalf("post-GetReply diff: (-got +want)\n%v", diff)
 			}
 		})
 	}
@@ -91,23 +110,31 @@ func TestReplyMessage_indagation(t *testing.T) {
 	} {
 		{
 			name: "indagation_OK",
-			text: "qual foi o motivo?",
+			text: "what was the reason?",
 			want: &reply.Response{
-				Text:  "sei la",
+				Text:  "I don't know",
 			},
 		},
 		{
 			name: "upperPrefix",
-			text: "Pq foi assim?",
+			text: "WhY is that?",
 			want: &reply.Response{
-				Text:  "sei la",
+				Text:  "I don't know",
+			},
+		},
+		{
+			// unrecognized indagations are treated as regular questions
+			name: "unrecognizedIndagation",
+			text: "where is the key?",
+			want: &reply.Response{
+				Text: "yes",
 			},
 		},
 		{
 			name: "untrimmedQuestion",
-			text: "           Pq foi assim?  ",
+			text: "           why is that?  ",
 			want: &reply.Response{
-				Text:  "sei la",
+				Text:  "I don't know",
 			},
 		},
 	}
@@ -115,12 +142,15 @@ func TestReplyMessage_indagation(t *testing.T) {
 	for _, test := range tests {
 		test := test
 		t.Run(test.name, func (t *testing.T) {
-			got := reply.GetReply(&reply.MessagePayload{
+			got, err := reply.GetReply(&reply.MessagePayload{
 				Text:   test.text,
 			})
+			if err != nil {
+				t.Fatalf("GetReply returned err = %v", err)
+			}
 
 			if diff := pretty.Compare(got, test.want); diff != "" {
-				t.Errorf("post-GetReply diff: (-got +want)\n%v", diff)
+				t.Fatalf("post-GetReply diff: (-got +want)\n%v", diff)
 			}
 		})
 	}
@@ -131,8 +161,32 @@ func TestReplyMessage_customReplier(t *testing.T) {
 	reply.RegisterReplier(&CustomReplier{})
 
 	want := "custom my message"
-	if got := reply.GetReply(&reply.MessagePayload{Text: "my message"}); got.Text != want {
+	got, err := reply.GetReply(&reply.MessagePayload{Text: "my message"})
+	if err != nil {
+		t.Fatalf("GetReply returned err = %v", err)
+	}
+
+	if  got.Text != want {
 		t.Fatalf("GetReply did not use custom replier got %v want %v", got.Text, want)
+	}
+}
+
+func relativePathToProjectRoot() (string, error) {
+	path := "."
+	for {
+		files, err := ioutil.ReadDir(path)
+		if err != nil {
+			return "", err
+		}
+
+		// The dir containing go.mod is the project root.
+		for _, f := range files {
+			if f.Name() == "go.mod" {
+				return path, nil
+			}
+		}
+
+		path = "../" + path
 	}
 }
 
