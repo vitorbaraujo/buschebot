@@ -1,0 +1,21 @@
+linters:
+  enable-all: true
+  disable:
+    - exhaustivestruct
+    - funlen
+    - gci
+    - gochecknoglobals
+    - gochecknoinits
+    - godox
+    - goerr113
+    - gofumpt
+    - gomnd
+    - nestif
+    - nlreturn
+    - wrapcheck
+    - wsl
+
+linters-settings:
+  lll:
+    line-length: 140
+    tab-width: 4
