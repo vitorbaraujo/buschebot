@@ -2,6 +2,7 @@ package reply_test
 
 import (
 	"io/ioutil"
+	"os"
 	"path"
 	"testing"
 
@@ -22,18 +23,21 @@ func TestMain(m *testing.M) {
 	defer func() { storage.DataFile = oldDataFile }()
 
 	randIntFn := reply.RandInt
-	defer func() { reply.RandInt = randIntFn }()
 	reply.RandInt = func() int { return 1 } // aka should never reply
+	defer func() { reply.RandInt = randIntFn }()
 
-	m.Run()
+	defer func() { os.Exit(m.Run()) }()
 }
 
 func TestReplyMessage_noReply(t *testing.T) {
-	tests := []struct{
+	t.Parallel()
+	client := reply.NewClient([]reply.Replier{})
+
+	tests := []struct {
 		name string
 		text string
 		want *reply.Response
-	} {
+	}{
 		{
 			name: "noReply",
 			text: "hello there",
@@ -48,27 +52,31 @@ func TestReplyMessage_noReply(t *testing.T) {
 
 	for _, test := range tests {
 		test := test
-		t.Run(test.name, func (t *testing.T) {
-			got, err := reply.GetReply(&reply.MessagePayload{
-				Text:   test.text,
+		t.Run(test.name, func(t *testing.T) {
+			t.Parallel()
+			got, err := client.GetReply(&reply.MessagePayload{
+				Text: test.text,
 			})
 			if err != nil {
 				t.Fatalf("GetReply returned err = %v", err)
 			}
 
 			if diff := pretty.Compare(got, test.want); diff != "" {
-			    t.Fatalf("post-GetReply diff: (-got +want)\n%v", diff)
+				t.Fatalf("post-GetReply diff: (-got +want)\n%v", diff)
 			}
 		})
 	}
 }
 
 func TestReplyMessage_regularQuestion(t *testing.T) {
-	tests := []struct{
+	t.Parallel()
+	client := reply.NewClient([]reply.Replier{})
+
+	tests := []struct {
 		name string
 		text string
 		want *reply.Response
-	} {
+	}{
 		{
 			name: "regularQuestion",
 			text: "oh, really?",
@@ -87,8 +95,9 @@ func TestReplyMessage_regularQuestion(t *testing.T) {
 
 	for _, test := range tests {
 		test := test
-		t.Run(test.name, func (t *testing.T) {
-			got, err := reply.GetReply(&reply.MessagePayload{
+		t.Run(test.name, func(t *testing.T) {
+			t.Parallel()
+			got, err := client.GetReply(&reply.MessagePayload{
 				Text: test.text,
 			})
 			if err != nil {
@@ -103,23 +112,26 @@ func TestReplyMessage_regularQuestion(t *testing.T) {
 }
 
 func TestReplyMessage_indagation(t *testing.T) {
-	tests := []struct{
+	t.Parallel()
+	client := reply.NewClient([]reply.Replier{})
+
+	tests := []struct {
 		name string
 		text string
 		want *reply.Response
-	} {
+	}{
 		{
 			name: "indagation_OK",
 			text: "what was the reason?",
 			want: &reply.Response{
-				Text:  "I don't know",
+				Text: "I don't know",
 			},
 		},
 		{
 			name: "upperPrefix",
 			text: "WhY is that?",
 			want: &reply.Response{
-				Text:  "I don't know",
+				Text: "I don't know",
 			},
 		},
 		{
@@ -134,16 +146,17 @@ func TestReplyMessage_indagation(t *testing.T) {
 			name: "untrimmedQuestion",
 			text: "           why is that?  ",
 			want: &reply.Response{
-				Text:  "I don't know",
+				Text: "I don't know",
 			},
 		},
 	}
 
 	for _, test := range tests {
 		test := test
-		t.Run(test.name, func (t *testing.T) {
-			got, err := reply.GetReply(&reply.MessagePayload{
-				Text:   test.text,
+		t.Run(test.name, func(t *testing.T) {
+			t.Parallel()
+			got, err := client.GetReply(&reply.MessagePayload{
+				Text: test.text,
 			})
 			if err != nil {
 				t.Fatalf("GetReply returned err = %v", err)
@@ -156,17 +169,19 @@ func TestReplyMessage_indagation(t *testing.T) {
 	}
 }
 
-
 func TestReplyMessage_customReplier(t *testing.T) {
-	reply.RegisterReplier(&CustomReplier{})
+	t.Parallel()
+	client := reply.NewClient([]reply.Replier{
+		&CustomReplier{},
+	})
 
 	want := "custom my message"
-	got, err := reply.GetReply(&reply.MessagePayload{Text: "my message"})
+	got, err := client.GetReply(&reply.MessagePayload{Text: "my message"})
 	if err != nil {
 		t.Fatalf("GetReply returned err = %v", err)
 	}
 
-	if  got.Text != want {
+	if got.Text != want {
 		t.Fatalf("GetReply did not use custom replier got %v want %v", got.Text, want)
 	}
 }
@@ -192,6 +207,7 @@ func relativePathToProjectRoot() (string, error) {
 
 // CustomReplier implements a custom replier for testing purposes.
 type CustomReplier struct{}
+
 func (c CustomReplier) Reply(s string) string {
 	return "custom " + s
 }

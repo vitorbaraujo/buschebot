@@ -7,6 +7,7 @@ import (
 	"os"
 )
 
+// Data represents the data used by the bot to answer messages.
 type Data struct {
 	IndagationPrefixes []string `json:"indagation_prefixes"`
 	Responses          []string `json:"responses"`
@@ -14,6 +15,8 @@ type Data struct {
 }
 
 var data *Data
+
+// DataFile is the name of the file that contains the data used by the bot.
 var DataFile = "storage/data.json"
 
 // GetData retrieves the data from the database.
@@ -41,7 +44,8 @@ func GetRandomResponse() (string, error) {
 		return "", fmt.Errorf("getting random response: %w", err)
 	}
 
-	index := rand.Int()%len(data.Responses)
+	// nolint:gosec
+	index := rand.Int() % len(data.Responses)
 	return data.Responses[index], nil
 }
 
@@ -52,6 +56,7 @@ func GetRandomShortAnswer() (string, error) {
 		return "", fmt.Errorf("getting random short answer: %w", err)
 	}
 
-	index := rand.Int()%len(data.ShortAnswers)
+	// nolint:gosec
+	index := rand.Int() % len(data.ShortAnswers)
 	return data.ShortAnswers[index], nil
 }
