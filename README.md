@@ -1,5 +1,8 @@
 # Buschebot
 
+[![Build Status](https://travis-ci.com/vitorbaraujo/buschebot.svg?branch=master)](https://travis-ci.com/vitorbaraujo/buschebot)
+[![codecov](https://codecov.io/gh/vitorbaraujo/buschebot/branch/master/graph/badge.svg?token=XSZ2LD299V)](https://codecov.io/gh/vitorbaraujo/buschebot)
+
 Telegram bot to mimic [@jpbusche](https://github.com/jpbusche). 
 It basically replies to questions with funny comments.
 
