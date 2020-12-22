@@ -29,8 +29,8 @@ func TestMain(m *testing.M) {
 	defer func() { os.Exit(m.Run()) }()
 }
 
+// nolint:paralleltest
 func TestReplyMessage_noReply(t *testing.T) {
-	t.Parallel()
 	client := reply.NewClient([]reply.Replier{})
 
 	tests := []struct {
@@ -52,8 +52,8 @@ func TestReplyMessage_noReply(t *testing.T) {
 
 	for _, test := range tests {
 		test := test
+		// nolint:paralleltest
 		t.Run(test.name, func(t *testing.T) {
-			t.Parallel()
 			got, err := client.GetReply(&reply.MessagePayload{
 				Text: test.text,
 			})
@@ -68,8 +68,8 @@ func TestReplyMessage_noReply(t *testing.T) {
 	}
 }
 
+// nolint:paralleltest
 func TestReplyMessage_regularQuestion(t *testing.T) {
-	t.Parallel()
 	client := reply.NewClient([]reply.Replier{})
 
 	tests := []struct {
@@ -95,8 +95,8 @@ func TestReplyMessage_regularQuestion(t *testing.T) {
 
 	for _, test := range tests {
 		test := test
+		// nolint:paralleltest
 		t.Run(test.name, func(t *testing.T) {
-			t.Parallel()
 			got, err := client.GetReply(&reply.MessagePayload{
 				Text: test.text,
 			})
@@ -111,8 +111,8 @@ func TestReplyMessage_regularQuestion(t *testing.T) {
 	}
 }
 
+// nolint:paralleltest
 func TestReplyMessage_indagation(t *testing.T) {
-	t.Parallel()
 	client := reply.NewClient([]reply.Replier{})
 
 	tests := []struct {
@@ -153,8 +153,8 @@ func TestReplyMessage_indagation(t *testing.T) {
 
 	for _, test := range tests {
 		test := test
+		// nolint:paralleltest
 		t.Run(test.name, func(t *testing.T) {
-			t.Parallel()
 			got, err := client.GetReply(&reply.MessagePayload{
 				Text: test.text,
 			})
@@ -169,8 +169,8 @@ func TestReplyMessage_indagation(t *testing.T) {
 	}
 }
 
+// nolint:paralleltest
 func TestReplyMessage_customReplier(t *testing.T) {
-	t.Parallel()
 	client := reply.NewClient([]reply.Replier{
 		&CustomReplier{},
 	})
