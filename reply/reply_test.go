@@ -175,13 +175,12 @@ func TestReplyMessage_customReplier(t *testing.T) {
 		&CustomReplier{},
 	})
 
-	want := "custom my message"
 	got, err := client.GetReply(&reply.MessagePayload{Text: "my message"})
 	if err != nil {
 		t.Fatalf("GetReply returned err = %v", err)
 	}
 
-	if got.Text != want {
+	if want := "custom my message"; got.Text != want {
 		t.Fatalf("GetReply did not use custom replier got %v want %v", got.Text, want)
 	}
 }
