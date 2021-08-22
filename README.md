@@ -1,6 +1,6 @@
 # Buschebot
 
-[![Build Status](https://travis-ci.com/vitorbaraujo/buschebot.svg?branch=master)](https://travis-ci.com/vitorbaraujo/buschebot)
+![Build Status](https://github.com/vitorbaraujo/buschebot/actions/workflows/ci.yml/badge.svg)
 [![codecov](https://codecov.io/gh/vitorbaraujo/buschebot/branch/master/graph/badge.svg?token=XSZ2LD299V)](https://codecov.io/gh/vitorbaraujo/buschebot)
 
 Telegram bot to mimic [@jpbusche](https://github.com/jpbusche). 
