@@ -3,7 +3,7 @@ name: Go
 on:
   push:
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -11,7 +11,9 @@ jobs:
         uses: actions/setup-go@v2
         with:
           go-version: 1.17
-      - name: Test
-        run: make lint check cover
-      - name: Coverage
+      - name: Run lint
+        run: make lint
+      - name: Run tests
+        run: make check cover
+      - name: Upload coverage
         uses: codecov/codecov-action@v2
