@@ -4,7 +4,7 @@ import (
 	"log"
 	"os"
 
-	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
+	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"github.com/vitorbaraujo/buschebot/bot"
 	"github.com/vitorbaraujo/buschebot/repliers"
 	"github.com/vitorbaraujo/buschebot/reply"

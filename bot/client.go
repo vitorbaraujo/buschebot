@@ -3,7 +3,7 @@ package bot
 import (
 	"fmt"
 
-	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
+	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"github.com/vitorbaraujo/buschebot/reply"
 )
 
@@ -26,10 +26,7 @@ func (c *Client) Run() error {
 	cfg := tgbotapi.NewUpdate(0)
 	cfg.Timeout = 60
 
-	updates, err := c.bot.GetUpdatesChan(cfg)
-	if err != nil {
-		return err
-	}
+	updates := c.bot.GetUpdatesChan(cfg)
 
 	// This runs indefinitely.
 	for update := range updates {
